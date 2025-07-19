@@ -1,0 +1,88 @@
+<% layout('layouts/boilerplate') -%>
+
+  <%- include('../layouts/partials/navbar') %>
+
+      <%- include('../layouts/partials/flash') %>
+
+    <main class="app-main">
+      <div class="app-content">
+        <div class="bg-light d-flex justify-content-center align-items-center min-vh-100">
+          <div class="container">
+            <div class="card shadow-lg mx-auto rounded-4" style="max-width: 600px; border-radius: 20px;">
+              <div class="card-body p-4 p-lg-5">
+                <div class="text-center mb-4">
+                  <h1 class="h2 text-primary mb-0">Edit Special Service Attendance</h1>
+                </div>
+
+                <form action="/attendance/specialservice/<%= service._id %>?_method=PUT" method="POST">
+
+                  <div class="mb-4">
+                    <label class="form-label fw-medium">Service Category</label>
+                    <select class="form-select form-select-lg rounded-3" id="category" name="category" required>
+                      <option value=""></option>
+                      <% const categories = ['Home Caring Fellowship', 'GCK', 'Seminar']; %>
+                      <% categories.forEach(cat => { %>
+                        <option value="<%= cat %>" <%= service.category === cat ? 'selected' : '' %>>
+                          <%= cat %>
+                        </option>
+                      <% }); %>
+                    </select>
+                  </div>
+
+                  <div class="mb-4">
+                    <label for="date" class="form-label fw-medium">Date</label>
+                    <input 
+                      type="date" 
+                      class="form-control" 
+                      id="date" 
+                      name="date" 
+                      value="<%= service.date.toISOString().split('T')[0] %>" 
+                      required 
+                    />
+                  </div>
+
+                  <div class="mb-4">
+                    <label for="males" class="form-label fw-medium">Number of Adults</label>
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      id="males" 
+                      name="males" 
+                      value="<%= service.adults %>" 
+                      required 
+                    />
+                  </div>
+
+                  <div class="mb-4">
+                    <label for="females" class="form-label fw-medium">Number of Youths</label>
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      id="females" 
+                      name="females" 
+                      value="<%= service.youths %>" 
+                      required 
+                    />
+                  </div>
+
+                  <div class="mb-4">
+                    <label for="females" class="form-label fw-medium">Number of Children</label>
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      id="females" 
+                      name="females" 
+                      value="<%= service.children %>" 
+                      required 
+                    />
+                  </div>
+
+                  <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-3">Update</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <%- include('../layouts/partials/footer') %>

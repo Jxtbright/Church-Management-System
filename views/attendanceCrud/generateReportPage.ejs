@@ -1,0 +1,105 @@
+<% layout('layouts/boilerplate') -%>
+
+    <%- include('../layouts/partials/navbar') %>
+
+        <%- include('../layouts/partials/flash') %>
+
+        <main class="app-main">
+            <div class="app-content">
+                <div class="bg-light min-vh-100 d-flex align-items-center">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-12 col-md-8 col-lg-6">
+                                <div class="card shadow-lg rounded-3">
+                                    <div class="card-header bg-primary text-white rounded-top-3 py-3">
+                                        <h3 class="card-title text-center mb-0">Generate Monthly Report</h3>
+                                    </div>
+                                    <div class="card-body p-4">
+                                        <form action="/attendance/attendancereport_general" method="POST">
+
+                                            <div class="mb-4">
+                                                <%if(req.session.status==='manager' ){%>
+                                                    <div class="col">
+                                                        <label for="category" class="form-label">Select Group</label>
+                                                        <select class="form-select" id="groupSelect"
+                                                            name="groupId" required>
+                                                            <option value=""></option>
+                                                            <%for(group of groups){%>
+                                                                <option value="<%=group._id%>">
+                                                                    <%=group.name%>
+                                                                </option>
+                                                                <%}%>
+                                                        </select>
+                                                    </div>
+                                                    <%}%>
+                                            </div>
+
+                                            <div class="mb-4">
+                                                <%if(req.session.status==='manager' ||
+                                                    req.session.status==='grouppastor' ||
+                                                    req.session.status==='groupadmin' ){%>
+                                                    <div class="">
+                                                        <label for="category" class="form-label">Select Church</label>
+                                                        <select class="form-select" id="churchSelect"
+                                                            name="churchId" required>
+                                                            <option value=""></option>
+                                                            <%for(church of churches){%>
+                                                                <option value="<%=church._id%>">
+                                                                    <%=church.churchname%>
+                                                                </option>
+                                                                <%}%>
+                                                                    <%if(req.session.status==='grouppastor' ||
+                                                                        req.session.status==='groupadmin' ){%>
+                                                                        <option value="group">Generate for whole group
+                                                                        </option>
+                                                                        <%}%>
+                                                        </select>
+                                                    </div>
+                                                    <%}%>
+                                            </div>
+                                        
+                                            <div class="mb-4">
+                                                <label for="startdate" class="form-label fw-semibold">Start Date</label>
+                                                <input type="date" class="form-control form-control-lg" id="startdate"
+                                                    name="startdate" required>
+                                            </div>
+                                            <div class="mb-4">
+                                                <label for="enddate" class="form-label fw-semibold">End Date</label>
+                                                <input type="date" class="form-control form-control-lg" id="enddate"
+                                                    name="enddate" required>
+                                            </div>
+                                            <div class="d-grid mt-4">
+                                                <button type="submit" class="btn btn-primary btn-lg py-2">
+                                                    Generate Report
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+        // Get the select elements by their unique IDs
+        const groupSelect = document.getElementById('groupSelect');
+        const churchSelect = document.getElementById('churchSelect');
+
+        // Function to disable fields based on selections
+        const disableMutually = () => {
+          // If Group has a value, disable Church, else enable it
+          churchSelect.disabled = groupSelect.value !== '';
+          // If Church has a value, disable Group, else enable it
+          groupSelect.disabled = churchSelect.value !== '';
+        };
+
+        // Run on page load (in case of pre-filled values)
+        disableMutually();
+
+        // Add event listeners for changes
+        groupSelect.addEventListener('change', disableMutually);
+        churchSelect.addEventListener('change', disableMutually);
+      </script>
+        </main>
+        <%- include('../layouts/partials/footer') %>

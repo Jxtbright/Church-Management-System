@@ -1,0 +1,47 @@
+<% layout('layouts/boilerplate') -%>
+
+    <%- include('../layouts/partials/navbar') %>
+
+        <%- include('../layouts/partials/flash') %>
+
+            <main class="app-main">
+                <div class="app-content">
+                    <%if(req.session.status==='manager' || req.session.status==='grouppastor' ||
+                        req.session.status==='groupadmin' ){%>
+                        <div>
+                            <span class="me-2 fw-bold">Select Church:</span>
+                            <div class="btn-group">
+
+                                <%for(church of churches){%>
+                                    <%if(church._id==req.session.attendanceChurchId){%>
+                                        <a class="btn btn-secondary dropdown-toggle" id="filterButton" href="#"
+                                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <%=church.churchname%>
+                                        </a>
+                                        <%}%>
+                                            <%}%>
+                                                <%if(!req.session.attendanceChurchId){%>
+                                                    <a class="btn btn-secondary dropdown-toggle" id="filterButton"
+                                                        href="#" role="button" data-bs-toggle="dropdown"
+                                                        aria-expanded="false"></a>
+                                                    <%}%>
+                                                        <ul class="dropdown-menu">
+                                                            <%for(church of churches){%>
+                                                                <li><a class="dropdown-item"
+                                                                        href="/attendance/calendar/<%=church._id%>">
+                                                                        <%=church.churchname%>
+                                                                    </a></li>
+                                                                <%}%>
+                                                        </ul>
+                            </div>
+                        </div>
+                        <%}%>
+                            <div id='calendar' class="container mt-5"></div>
+                </div>
+
+            </main>
+            <%- include('../layouts/partials/footer') %>
+
+                <script src='https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.15/index.global.min.js'></script>
+
+                <script src="/scripts/calendar.js"></script>

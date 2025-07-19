@@ -1,0 +1,208 @@
+<% layout('layouts/boilerplate') -%>
+
+  <%- include('../layouts/partials/navbar') %>
+        <%- include('../layouts/partials/flash') %>
+
+
+    <main class="app-main">
+      <div class="app-content-header">
+        <div class="container-fluid">
+          <div class="row text-center">
+            <div class="col-md-12">
+              <h2 class="mb-0">Attendance Forms</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="app-content m-5 mt-2">
+        <div class="container-fluid">
+          <div class="row g-4">
+            <div class="col-md-12">
+              <div class="card card-info card-outline mb-4">
+                <div class="card-header d-flex justify-content-center">
+                  <div class="card-title ">
+                    <h3>
+                      <%=dayName%>
+                    </h3>
+                    <h4>
+                      <%=formattedDate%>
+                    </h4>
+                  </div>
+                </div>
+
+                <form action="/attendance/create/<%=date%>" method="POST">
+                  <div class="card-body">
+                    <div class="row g-3">
+
+                      <!-- Combined Accordion Container -->
+                      <div class="accordion d-grid gap-2 mx-auto" id="accordionExample">
+
+                        <!-- Accordion One -->
+                        <div class="accordion-item">
+                          <div class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                              data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"
+                              data-bs-parent="#accordionExample"> <!-- Added data-bs-parent -->
+                              <h5>NO service ?</h5>
+                            </button>
+                          </div>
+                          <div id="collapseOne" class="accordion-collapse collapse ">
+                            <div class="accordion-body ">
+                              <div class="row mt-2">
+                                <div class="col-md-12 text-center">
+                                  <label class="form-label" for="reason">Reason</label>
+                                  <textarea class="form-control rounded-3" id="reason" name="attendance[reason]"
+                                    rows="3" placeholder="Write your message here..."></textarea>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Accordion Two -->
+                        <div class="accordion-item">
+                          <div class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                              data-bs-target="#collapsetwo" aria-expanded="true" aria-controls="collapsetwo"
+                              data-bs-parent="#accordionExample">
+                              <h5>Enter Attendance</h5>
+                            </button>
+                          </div>
+                          <div id="collapsetwo" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                              <div class="card-body">
+                                <div class="row g-3">
+
+                                  <div class="col-md-6">
+                                    <label class="form-label" for="adultmale">Adult Males</label>
+                                    <input required class="form-control" type="number" name="attendance[adultmale]"
+                                      id="adultmale">
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label class="form-label" for="adultfemale">Adult Females</label>
+                                    <input required class="form-control" type="number" name="attendance[adultfemale]"
+                                      id="adultfemale">
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label class="form-label" for="youthmale">Youth Males</label>
+                                    <input required class="form-control" type="number" name="attendance[youthmale]"
+                                      id="youthmale">
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label class="form-label" for="youthfemale">Youth Females</label>
+                                    <input required class="form-control" type="number" name="attendance[youthfemale]"
+                                      id="youthfemale">
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label class="form-label" for="childrenmale">Children Males</label>
+                                    <input required class="form-control" type="number" name="attendance[childrenmale]"
+                                      id="childrenmale">
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label class="form-label" for="childrenfemale">Children Females</label>
+                                    <input required class="form-control" type="number" name="attendance[childrenfemale]"
+                                      id="childrenfemale">
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label class="form-label" for="newcomersmales">New Comers Males</label>
+                                    <input required class="form-control" type="number" name="attendance[newcomersmales]"
+                                      id="newcomersmales">
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label class="form-label" for="newcomersfemales">New Comers Females</label>
+                                    <input required class="form-control" type="number" name="attendance[newcomersfemales]"
+                                      id="newcomersfemales">
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label class="form-label" for="firstoffering">First Offering</label>
+                                    <input required class="form-control" type="number" step="0.01"
+                                      name="attendance[firstoffering]" id="firstoffering">
+                                  </div>
+
+                                  <div class="col-md-6">
+                                    <label class="form-label" for="secondoffering">Second Offering</label>
+                                    <input required class="form-control" type="number" step="0.01"
+                                      name="attendance[secondoffering]" id="secondoffering">
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+
+                    </div>
+                  </div>
+                  <div class="card-footer d-flex justify-content-center gap-2">
+                    <button class="btn btn-info" type="submit">Add Attendance</button>
+                    <a href="javascript:history.back()" class="btn btn-secondary">Back</a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const form = document.querySelector('form[action^="/attendance/create"]');
+          const reasonBox = document.getElementById('reason');
+          // Grab all numeric attendance inputs
+          const attendanceInputs = Array.from(
+            form.querySelectorAll('input[type="number"]')
+          );
+
+          // 1️⃣ Submission validation
+          form.addEventListener('submit', e => {
+            const reason = reasonBox.value.trim();
+            const anyAttendance = attendanceInputs.some(i => {
+              const val = i.value.trim();
+              return val !== '' && parseFloat(val) > 0;
+            });
+
+            if ((reason && anyAttendance) || (!reason && !anyAttendance)) {
+              e.preventDefault();
+              alert(
+                'Please fill **either** the "No service" reason **or** the attendance fields—but not both (and not neither).'
+              );
+            }
+          });
+
+          // 2️⃣ Auto-disable opposite section on input
+
+          // If user types a reason, disable all number fields
+          reasonBox.addEventListener('input', () => {
+            const hasReason = reasonBox.value.trim().length > 0;
+            attendanceInputs.forEach(i => {
+              i.disabled = hasReason;
+              // Optionally clear any values when disabling:
+              if (hasReason) i.value = '';
+            });
+          });
+
+          // If user enters any attendance number, disable the reason textarea
+          attendanceInputs.forEach(i => {
+            i.addEventListener('input', () => {
+              const any = attendanceInputs.some(j => j.value.trim() !== '');
+              reasonBox.disabled = any;
+              if (any) {
+                // Optionally clear the reason text when disabling:
+                reasonBox.value = '';
+              }
+            });
+          });
+        });
+      </script>
+
+    </main>
+    <%- include('../layouts/partials/footer') %>

@@ -1,0 +1,298 @@
+<% layout('layouts/boilerplate') -%>
+
+    <%- include('../layouts/partials/navbar') %>
+
+        <main class="app-main">
+            <div class="app-content">
+                <style>
+                    .attendance-card {
+                        border-left: 2px solid #0d6efd;
+                        border-top: 2px solid #0d6efd;
+                        transition: transform 0.3s;
+                    }
+
+                    .records-card {
+                        border-top: 2px solid #0d6efd;
+                        transition: transform 0.3s;
+                    }
+
+                    .records-card:hover {
+                        transform: translateY(-5px);
+                    }
+
+                    .stat-number {
+                        font-size: 2rem;
+                        font-weight: bold;
+                        color: #0d6efd;
+                    }
+
+                    .object-fit-cover {
+                        object-fit: cover;
+                    }
+
+                    .rounded-circle-container {
+                        width: 100px;
+                        height: 100px;
+                        overflow: hidden;
+                        border-radius: 50%;
+                    }
+                </style>
+
+                <div class="bg-light">
+                    <div class="container py-3">
+
+                        <div class="row mb-2">
+                            <div class="col-12 text-center">
+                                <h1>Attendance Records</h1>
+                            </div>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="card attendance-card h-100">
+                                    <div class="card-header text-center">
+                                        <h3 class="">
+                                            <%=dayName%>
+                                        </h3>
+                                        <h4 class="">
+                                            <%=formattedDate%>
+                                        </h4>
+                                    </div>
+                                    <div class="card-body">
+
+                                        <% if(attendance.reason){ %>
+                                            <h3 class="text-center text-muted">
+                                                <%=attendance.reason%>
+                                            </h3>
+                                            <% } else{ %>
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-3">
+                                                        <div class="card records-card">
+                                                            <div class="card-body">
+                                                                <div class="row text-center gx-2">
+
+                                                                    <div class="col-4">
+                                                                        <div class="d-flex justify-content-center">
+                                                                            <div class="rounded-circle-container">
+                                                                                <img src="/images/adult.png"
+                                                                                    class="img-fluid h-100 w-100 object-fit-cover"
+                                                                                    alt="Icon">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <h4 class="text-muted">Adults</h4>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-4 ">
+                                                                        <h6 class="text-muted">Males</h6>
+                                                                        <div class="stat-number">
+                                                                            <%=attendance.adultmale%>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-4 ">
+                                                                        <h6 class="text-muted">Females</h6>
+                                                                        <div class="stat-number">
+                                                                            <%=attendance.adultfemale%>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <div class="card records-card h-100">
+                                                            <div class="card-body">
+                                                                <div class="row text-center gx-2">
+
+                                                                    <div class="col-4">
+                                                                        <div class="d-flex justify-content-center">
+                                                                            <div class="rounded-circle-container">
+                                                                                <img src="/images/youth.png"
+                                                                                    class="img-fluid h-100 w-100 object-fit-cover"
+                                                                                    alt="Icon">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <h4 class="text-muted">Youths</h4>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-4 ">
+                                                                        <h6 class="text-muted">Males</h6>
+                                                                        <div class="stat-number">
+                                                                            <%=attendance.youthmale%>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-4 ">
+                                                                        <h6 class="text-muted">Females</h6>
+                                                                        <div class="stat-number">
+                                                                            <%=attendance.youthfemale%>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <div class="card records-card h-100">
+                                                            <div class="card-body">
+                                                                <div class="row text-center gx-2">
+
+                                                                    <div class="col-4">
+                                                                        <div class="d-flex justify-content-center">
+                                                                            <div class="rounded-circle-container">
+                                                                                <img src="/images/child.png"
+                                                                                    class="img-fluid h-100 w-100 object-fit-cover"
+                                                                                    alt="Icon">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <h4 class="text-muted">Children</h4>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-4 ">
+                                                                        <h6 class="text-muted">Males</h6>
+                                                                        <div class="stat-number">
+                                                                            <%=attendance.childrenmale%>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-4 ">
+                                                                        <h6 class="text-muted">Females</h6>
+                                                                        <div class="stat-number">
+                                                                            <%=attendance.childrenfemale%>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <div class="card records-card h-100">
+                                                            <div class="card-body">
+                                                                <div class="row text-center gx-2">
+
+                                                                    <div class="col-4">
+                                                                        <div class="d-flex justify-content-center">
+                                                                            <div class="rounded-circle-container">
+                                                                                <img src="/images/newcomer.png"
+                                                                                    class="img-fluid h-100 w-100 object-fit-cover"
+                                                                                    alt=" Icon">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <h4 class="text-muted">New Comers</h4>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-4 ">
+                                                                        <h6 class="text-muted">Males</h6>
+                                                                        <div class="stat-number">
+                                                                            <%=attendance.newcomersmales%>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-4 ">
+                                                                        <h6 class="text-muted">Females</h6>
+                                                                        <div class="stat-number">
+                                                                            <%=attendance.newcomersfemales%>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <div class="card records-card h-100">
+                                                            <div class="card-body">
+                                                                <div class="row text-center gx-2">
+
+                                                                    <div class="col-4">
+                                                                        <div class="d-flex justify-content-center">
+                                                                            <div class="rounded-circle-container">
+                                                                                <img src="/images/offering.jpg"
+                                                                                    class="img-fluid h-100 w-100 object-fit-cover"
+                                                                                    alt=" Icon">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <h4 class="text-muted">Offering</h4>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-4 ">
+                                                                        <h6 class="text-muted">1st Offering</h6>
+                                                                        <div class="stat-number">GH&#8373;
+                                                                            <%=offering.firstoffering%>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-4 ">
+                                                                        <h6 class="text-muted">2nd Offering</h6>
+                                                                        <div class="stat-number">GH&#8373;
+                                                                            <%=offering.secondoffering%>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="card attendance-card">
+                                                        <div class="card-body text-center">
+                                                            <h4 class="text-muted mb-0">
+                                                                Total Attendance:
+                                                                <span class="stat-number">
+                                                                    <%= totalAttendance %>
+                                                                </span>
+                                                            </h4>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row mt-4 text-center justify-content-center g-3">
+                            <div class="col-auto">
+                                <a class="btn btn-primary btn-lg" href="/attendance/<%=attendance._id%>/editpage">Edit
+                                    Records</a>
+                            </div>
+                            <div class="col-auto">
+                                <form id="deleteForm" action="/attendance/<%= attendance._id %>/delete?_method=DELETE"
+                                    method="POST">
+                                    <button type="button" class="btn btn-danger btn-lg" onclick="confirmDelete()">Delete
+                                        Records</button>
+                                </form>
+                            </div>
+                            <div class="col-auto">
+                                <a href="javascript:history.back()" class="btn btn-primary btn-lg">Back</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <%- include('../layouts/partials/footer') %>
+            <script>
+                function confirmDelete() {
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "This action cannot be undone!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Yes, delete it!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById("deleteForm").submit();
+                        }
+                    });
+                }
+            </script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

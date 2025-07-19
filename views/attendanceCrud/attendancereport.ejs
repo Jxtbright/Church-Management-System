@@ -1,0 +1,75 @@
+<% layout('layouts/boilerplate') -%>
+    <section class="p-5">
+        <div class="container">
+            <div class="row text-center justify-content-evenly g-5">
+                <div class="col-md-6">
+                    <div class="card bg-secondary text-light">
+                        <div class="card-body">
+                            <div class="h1 mb-3">
+                                <i class="bi bi-laptop"></i>
+                            </div>
+                            <h3 class="card-title mb-3">
+                                Attendance Report (<%= churchId.name %>)
+                            </h3>
+                            <p class="card-text">
+                            <ul style="list-style-type:none;">
+                                <li>Total Adult Males: <%= report.totaladultmale %>
+                                </li>
+                                <li>Total Adult Females: <%= report.totaladultfemale %>
+                                </li>
+                                <li>Total Youth Males: <%= report.totalyouthmale %>
+                                </li>
+                                <li>Total Youth Females: <%= report.totalyouthfemale %>
+                                </li>
+                                <li>Total Children Males: <%= report.totalchildrenmale %>
+                                </li>
+                                <li>Total Children Females: <%= report.totalchildrenfemale %>
+                                </li>
+                                <li>Total Adults: <%= report.totaladult %>
+                                </li>
+                                <li>Total Youths: <%= report.totalyouth %>
+                                </li>
+                                <li>Total Children: <%= report.totalchildren %>
+                                </li>
+                                <li>Total Males: <%= report.totalmale %>
+                                </li>
+                                <li>Total Females: <%= report.totalfemale %>
+                                </li>
+                                <li>Total: <%= report.total %>
+                                </li>
+                                <li>Total Adult Males average: <%= report.averagetotaladultmale %>
+                                </li>
+                                <li>Total Adult Females average: <%= report.averagetotaladultfemale %>
+                                </li>
+                                <li>Total Youth Males average: <%= report.averagetotalyouthmale %>
+                                </li>
+                                <li>Total Youth Females average: <%= report.averagetotalyouthfemale %>
+                                </li>
+                                <li>Total Children Males average: <%= report.averagetotalchildrenmale %>
+                                </li>
+                                <li>Total Children Females average: <%= report.averagetotalchildrenfemale %>
+                                </li>
+                                <li>Total Adults average: <%= report.averagetotaladult %>
+                                </li>
+                                <li>Total Youths average: <%= report.averagetotalyouth %>
+                                </li>
+                                <li>Total Children average: <%= report.averagetotalchildren %>
+                                </li>
+                                <li>Total Males average: <%= report.averagetotalmale %>
+                                </li>
+                                <li>Total Females average: <%= report.averagetotalfemale %>
+                                </li>
+                                <li>Total average: <%= report.averagetotal %>
+                            </ul>
+                            </p>
+                        </div>
+                        <div>
+                            <form action="/attendance/download/<%= churchId %> " method="POST">
+                                <button class="btn btn-primary">Download</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>

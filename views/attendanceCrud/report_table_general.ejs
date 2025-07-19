@@ -1,0 +1,925 @@
+<% layout('layouts/boilerplate') -%>
+  <%- include('../layouts/partials/navbar') %>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      .stat-card,
+      .service-section {
+        transition: transform 0.3s ease;
+        border: 1px solid #e2e8f0;
+      }
+
+      .stat-card:hover,
+      .service-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-value {
+        color: #3498db;
+      }
+
+      .detailed-table thead tr:first-child th {
+        background-color: #1a2530;
+        font-size: 1.1rem;
+        padding: 1rem;
+      }
+
+      .detailed-table th {
+        background-color: #2c3e50;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      .detailed-table tbody tr:nth-child(even) {
+        background-color: #f8f9fa;
+      }
+
+      .detailed-table tbody tr:hover {
+        background-color: #edf2f7;
+      }
+
+      @media (max-width: 768px) {
+        .stat-value {
+          font-size: 2rem;
+        }
+
+        .detailed-table th,
+        .detailed-table td {
+          padding: 0.5rem;
+          font-size: 0.85rem;
+        }
+
+        .detailed-table thead tr:first-child th {
+          font-size: 0.95rem;
+          padding: 0.75rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .stat-value {
+          font-size: 1.8rem;
+        }
+
+        /* Even smaller table adjustments */
+        .detailed-table th,
+        .detailed-table td {
+          padding: 0.4rem;
+          font-size: 0.8rem;
+        }
+
+        .detailed-table thead tr:first-child th {
+          font-size: 0.9rem;
+          padding: 0.5rem;
+        }
+
+        .service-header h3 {
+          font-size: 1.1rem;
+        }
+      }
+    </style>
+
+    <main class="app-main">
+      <div class="app-content">
+        <div class="container-fluid">
+          <div class="container">
+            <header class="bg-primary text-white text-center p-3 p-md-4 rounded shadow mb-4">
+              <h1 class="display-4 fw-bold d-flex align-items-center justify-content-center gap-3 flex-wrap">
+                <i class="fas fa-church"></i>
+                <% if (req.session.churchAttendance){ %>
+                  <%=req.session.churchName%> Church
+                    <%}else if(req.session.groupAttendance){%>
+                      <%=req.session.groupName%> Group
+                        <%}%>
+              </h1>
+              <p class="lead mb-0">Monthly Attendance & Offering Report</p>
+              <p class="lead">
+                <%=req.session.startdate%> - <%=req.session.enddate%>
+              </p>
+            </header>
+
+            <div class="row g-4 mb-4">
+              <!-- Stat cards unchanged -->
+            </div>
+
+            <div class="attendance-timeline card shadow mb-4">
+              <div class="card-body">
+                <div
+                  class="timeline-header d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom flex-wrap">
+                  <h2 class="mx-auto d-flex align-items-center gap-2 mb-2 mb-md-0">
+                    <i class="fas fa-calendar-alt"></i> Attendance Report
+                  </h2>
+                  <a href="/attendance/download_general" class="btn btn-primary ms-md-auto">PDF</a>
+                </div>
+
+                <div class="service-tables row g-4 mt-3">
+                  <div class="service-section sunday card shadow">
+
+                    <div class="card-body">
+                      <div class="service-header text-center mb-4 pb-3 border-bottom">
+                        <h3 class="d-flex align-items-center justify-content-center gap-2">
+                          <span class="service-icon">⛪</span> Sunday Worship Service
+                        </h3>
+                      </div>
+                      <div class="detailed-table">
+                        <div class="table-responsive">
+                          <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                              <tr>
+                                <th colspan="4" class="text-center">
+                                  <h4 class="mb-0">Attendance & Offering</h4>
+                                </th>
+                              </tr>
+                              <tr>
+                                <th></th>
+                                <th>Males</th>
+                                <th>Females</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Adults</td>
+                                <td>
+                                  <%=sundayValues.adultmaleAvg || 0 %>
+                                </td>
+                                <td>
+                                  <%=sundayValues.adultfemaleAvg || 0 %>
+                                </td>
+                                <td>
+                                  <%=sundayValues.adultsTotalAvg || 0 %>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Youths</td>
+                                <td>
+                                  <%=sundayValues.youthmaleAvg || 0 %>
+                                </td>
+                                <td>
+                                  <%=sundayValues.youthfemaleAvg || 0 %>
+                                </td>
+                                <td>
+                                  <%=sundayValues.youthsTotalAvg || 0 %>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Children</td>
+                                <td>
+                                  <%=sundayValues.childrenmaleAvg || 0 %>
+                                </td>
+                                <td>
+                                  <%=sundayValues.childrenfemaleAvg || 0 %>
+                                </td>
+                                <td>
+                                  <%=sundayValues.childrensTotalAvg || 0 %>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>New Comers</td>
+                                <td>
+                                  <%=sundayValues.newcomersmaleAvg || 0 %>
+                                </td>
+                                <td>
+                                  <%=sundayValues.newcomersfemaleAvg || 0 %>
+                                </td>
+                                <td>
+                                  <%=sundayValues.newcomerssTotalAvg || 0 %>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Total Attendance</td>
+                                <td>
+                                  <%=sundayValues.adultmaleAvg || 0 + sundayValues.youthmaleAvg || 0 +
+                                    sundayValues.childrenmaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=sundayValues.adultfemaleAvg || 0 + sundayValues.youthfemaleAvg || 0 +
+                                    sundayValues.childrenfemaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=sundayValues.adultsTotalAvg || 0 + sundayValues.youthsTotalAvg || 0 +
+                                    sundayValues.childrensTotalAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td colspan="4" class="text-center"><strong>Offering Details</strong></td>
+                              </tr>
+                              <tr>
+                                <td>1st Offering</td>
+                                <td colspan="3">GH₵<%=sundayValues.firstOfferingAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>2nd Offering</td>
+                                <td colspan="3">GH₵<%=sundayValues.secondOfferingAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td><strong>Total Offering</strong></td>
+                                <td colspan="3"><strong>GH₵<%=sundayValues.totalOfferingAvg || 0%></strong></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="service-section sunday card shadow">
+                    <div class="card-body">
+                      <div class="service-header text-center mb-4 pb-3 border-bottom">
+                        <h3 class="d-flex align-items-center justify-content-center gap-2">
+                          <span class="service-icon">📖</span> Monday Bible Studies
+                        </h3>
+                      </div>
+                      <div class="detailed-table">
+                        <div class="table-responsive">
+                          <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                              <tr>
+                                <th colspan="4" class="text-center">
+                                  <h4 class="mb-0">Attendance & Offering</h4>
+                                </th>
+                              </tr>
+                              <tr>
+                                <th></th>
+                                <th>Males</th>
+                                <th>Females</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Adults</td>
+                                <td>
+                                  <%=mondayValues.adultmaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=mondayValues.adultfemaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=mondayValues.adultsTotalAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Youths</td>
+                                <td>
+                                  <%=mondayValues.youthmaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=mondayValues.youthfemaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=mondayValues.youthsTotalAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Children</td>
+                                <td>
+                                  <%=mondayValues.childrenmaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=mondayValues.childrenfemaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=mondayValues.childrensTotalAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>New Comers</td>
+                                <td>
+                                  <%=mondayValues.newcomersmaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=mondayValues.newcomersfemaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=mondayValues.newcomerssTotalAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Total Attendance</td>
+                                <td>
+                                  <%=mondayValues.adultmaleAvg || 0 + mondayValues.youthmaleAvg || 0 +
+                                    mondayValues.childrenmaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=mondayValues.adultfemaleAvg || 0 + mondayValues.youthfemaleAvg || 0 +
+                                    mondayValues.childrenfemaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=mondayValues.adultsTotalAvg || 0 + mondayValues.youthsTotalAvg || 0 +
+                                    mondayValues.childrensTotalAvg || 0%>
+                                </td>
+                              </tr>
+                              <!-- Offering section - now with consistent styling -->
+                              <tr>
+                                <td colspan="4" class="text-center"><strong>Offering Details</strong></td>
+                              </tr>
+                              <tr>
+                                <td>1st Offering</td>
+                                <td colspan="3">GH₵<%=mondayValues.firstOfferingAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>2nd Offering</td>
+                                <td colspan="3">GH₵<%=mondayValues.secondOfferingAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td><strong>Total Offering</strong></td>
+                                <td colspan="3"><strong>GH₵<%=mondayValues.totalOfferingAvg || 0%></strong></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="service-section sunday card shadow">
+                    <div class="card-body">
+                      <div class="service-header text-center mb-4 pb-3 border-bottom">
+                        <h3 class="d-flex align-items-center justify-content-center gap-2">
+                          <span class="service-icon">🔥</span> Thursday Revival & Evangelism
+                        </h3>
+                      </div>
+                      <div class="detailed-table">
+                        <div class="table-responsive">
+                          <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                              <tr>
+                                <th colspan="4" class="text-center">
+                                  <h4 class="mb-0">Attendance & Offering</h4>
+                                </th>
+                              </tr>
+                              <tr>
+                                <th></th>
+                                <th>Males</th>
+                                <th>Females</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Adults</td>
+                                <td>
+                                  <%=thursdayValues.adultmaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=thursdayValues.adultfemaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=thursdayValues.adultsTotalAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Youths</td>
+                                <td>
+                                  <%=thursdayValues.youthmaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=thursdayValues.youthfemaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=thursdayValues.youthsTotalAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Children</td>
+                                <td>
+                                  <%=thursdayValues.childrenmaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=thursdayValues.childrenfemaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=thursdayValues.childrensTotalAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>New Comers</td>
+                                <td>
+                                  <%=thursdayValues.newcomersmaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=thursdayValues.newcomersfemaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=thursdayValues.newcomerssTotalAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Total Attendance</td>
+                                <td>
+                                  <%=thursdayValues.adultmaleAvg || 0 + thursdayValues.youthmaleAvg || 0 +
+                                    thursdayValues.childrenmaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=thursdayValues.adultfemaleAvg || 0 + thursdayValues.youthfemaleAvg || 0 +
+                                    thursdayValues.childrenfemaleAvg || 0%>
+                                </td>
+                                <td>
+                                  <%=thursdayValues.adultsTotalAvg || 0 + thursdayValues.youthsTotalAvg || 0 +
+                                    thursdayValues.childrensTotalAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td colspan="4" class="text-center"><strong>Offering Details</strong></td>
+                              </tr>
+                              <tr>
+                                <td>1st Offering</td>
+                                <td colspan="3">GH₵<%=thursdayValues.firstOfferingAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>2nd Offering</td>
+                                <td colspan="3">GH₵<%=thursdayValues.secondOfferingAvg || 0%>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td><strong>Total Offering</strong></td>
+                                <td colspan="3"><strong>GH₵<%=thursdayValues.totalOfferingAvg || 0%></strong></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="service-section sunday card shadow">
+
+                    <div class="card-body">
+                      <div class="service-header text-center mb-4 pb-3 border-bottom">
+                        <h3 class="d-flex align-items-center justify-content-center gap-2">
+                          <span class="service-icon">⛪</span> GCK
+                        </h3>
+                      </div>
+                      <div class="detailed-table">
+                        <div class="table-responsive">
+                          <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                              <tr>
+                                <th>Date</th>
+                                <th>Adults</th>
+                                <th>Youths</th>
+                                <th>Children</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% let totalAdults=0 %>
+                              <%let totalYouths=0 %>
+                              <%let totalChildren=0 %>
+                              <%for(service of gckArray){ %>
+                                <tr>
+                                  <td>
+                                    <%= service.date.toISOString().split('T')[0] %>
+                                  </td>
+                                  <td>
+                                    <%=service.adults%>
+                                  </td>
+                                  <td>
+                                    <%=service.youths%>
+                                  </td>
+                                  <td>
+                                    <%=service.children%>
+                                  </td>
+                                  <td>
+                                    <%=service.adults + service.youths + service.children%>
+                                  </td>
+                                </tr>
+                                <% totalAdults +=service.adults %>
+                                <%totalYouths +=service.youths %>
+                                <%totalChildren +=service.children }%>
+                                  <tr>
+                                    <td>Total</td>
+                                    <td>
+                                      <%=totalAdults%>
+                                    </td>
+                                    <td>
+                                      <%=totalYouths%>
+                                    </td>
+                                    <td>
+                                      <%=totalChildren%>
+                                    </td>
+                                    <td>
+                                      <%=totalAdults + totalYouths + totalChildren%>
+                                    </td>
+                                  </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="service-section sunday card shadow">
+
+                    <div class="card-body">
+                      <div class="service-header text-center mb-4 pb-3 border-bottom">
+                        <h3 class="d-flex align-items-center justify-content-center gap-2">
+                          <span class="service-icon">⛪</span> Home Caring Fellowship
+                        </h3>
+                      </div>
+                      <div class="detailed-table">
+                        <div class="table-responsive">
+                          <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                              <tr>
+                                <th>Date</th>
+                                <th>Adults</th>
+                                <th>Youths</th>
+                                <th>Children</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% let totalAdults1=0 %>
+                              <%let totalYouths1=0 %>
+                              <%let totalChildren1=0 %>
+                              <%for(service of homeCaringFellowshipArray){ %>
+                                <tr>
+                                  <td>
+                                    <%= service.date.toISOString().split('T')[0] %>
+                                  </td>
+                                  <td>
+                                    <%=service.adults%>
+                                  </td>
+                                  <td>
+                                    <%=service.youths%>
+                                  </td>
+                                  <td>
+                                    <%=service.children%>
+                                  </td>
+                                  <td>
+                                    <%=service.adults + service.youths + service.children%>
+                                  </td>
+                                </tr>
+                                <% totalAdults +=service.adults %>
+                                <%totalYouths +=service.youths %>
+                                <%totalChildren +=service.children }%>
+                                  <tr>
+                                    <td>Total</td>
+                                    <td>
+                                      <%=totalAdults1%>
+                                    </td>
+                                    <td>
+                                      <%=totalYouths1%>
+                                    </td>
+                                    <td>
+                                      <%=totalChildren1%>
+                                    </td>
+                                    <td>
+                                      <%=totalAdults1 + totalYouths1 + totalChildren1%>
+                                    </td>
+                                  </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="service-section sunday card shadow">
+
+                    <div class="card-body">
+                      <div class="service-header text-center mb-4 pb-3 border-bottom">
+                        <h3 class="d-flex align-items-center justify-content-center gap-2">
+                          <span class="service-icon">⛪</span> Seminars
+                        </h3>
+                      </div>
+                      <div class="detailed-table">
+                        <div class="table-responsive">
+                          <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                              <tr>
+                                <th>Date</th>
+                                <th>Adults</th>
+                                <th>Youths</th>
+                                <th>Children</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% let totalAdults2=0 %>
+                              <%let totalYouths2=0 %>
+                              <%let totalChildren2=0 %>
+                              <%for(service of seminarArray){ %>
+                                <tr>
+                                  <td>
+                                    <%= service.date.toISOString().split('T')[0] %>
+                                  </td>
+                                  <td>
+                                    <%=service.adults%>
+                                  </td>
+                                  <td>
+                                    <%=service.youths%>
+                                  </td>
+                                  <td>
+                                    <%=service.children%>
+                                  </td>
+                                  <td>
+                                    <%=service.adults + service.youths + service.children%>
+                                  </td>
+                                </tr>
+                                <% totalAdults +=service.adults %>
+                                <%totalYouths +=service.youths %>
+                                <%totalChildren +=service.children }%>
+                                  <tr>
+                                    <td>Total</td>
+                                    <td>
+                                      <%=totalAdults2%>
+                                    </td>
+                                    <td>
+                                      <%=totalYouths2%>
+                                    </td>
+                                    <td>
+                                      <%=totalChildren2%>
+                                    </td>
+                                    <td>
+                                      <%=totalAdults2 + totalYouths2 + totalChildren2%>
+                                    </td>
+                                  </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <footer class="text-center py-4 text-muted">
+              <p class="mb-0">Grace Community Church &copy; 2023 | Attendance Report Generated on June 15, 2023</p>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+        accordionHeaders.forEach(header => {
+          header.addEventListener('click', function () {
+            const isActive = this.classList.contains('active');
+
+            // Close all accordion items
+            document.querySelectorAll('.accordion-header').forEach(h => {
+              h.classList.remove('active');
+              h.nextElementSibling.classList.remove('active');
+            });
+
+            // If this wasn't active, open it
+            if (!isActive) {
+              this.classList.add('active');
+              this.nextElementSibling.classList.add('active');
+            }
+          });
+        });
+      });
+    </script>
+
+
+
+
+
+    <!-- 
+<div class="service-tables row g-4 mt-3">
+
+                  <div class="service-section sunday card shadow">
+                    <div class="card-body">
+                      <div class="service-header text-center mb-4 pb-3 border-bottom">
+                        <h3 class="d-flex align-items-center justify-content-center gap-2">
+                          <span class="service-icon">⛪</span> Sunday Worship Service
+                        </h3>
+                      </div>
+                      <div class="detailed-table">
+                        <div class="table-responsive">
+                          <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                              <tr>
+                                <th colspan="4" class="text-center">
+                                  <h4 class="mb-0">Attendance & Offering</h4>
+                                </th>
+                              </tr>
+                              <tr>
+                                <th></th>
+                                <th>Males</th>
+                                <th>Females</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Adults</td>
+                                <td>30</td>
+                                <td>25</td>
+                                <td>55</td>
+                              </tr>
+                              <tr>
+                                <td>Youths</td>
+                                <td>15</td>
+                                <td>20</td>
+                                <td>35</td>
+                              </tr>
+                              <tr>
+                                <td>Children</td>
+                                <td>12</td>
+                                <td>10</td>
+                                <td>22</td>
+                              </tr>
+                              <tr>
+                                <td>New Comers</td>
+                                <td>5</td>
+                                <td>7</td>
+                                <td>12</td>
+                              </tr>
+                              <tr>
+                                <td>Total Attendance</td>
+                                <td>62</td>
+                                <td>62</td>
+                                <td>124</td>
+                              </tr>
+                              <tr>
+                                <td colspan="4" class="text-center"><strong>Offering Details</strong></td>
+                              </tr>
+                              <tr>
+                                <td>1st Offering</td>
+                                <td colspan="3">GH₵24,940</td>
+                              </tr>
+                              <tr>
+                                <td>2nd Offering</td>
+                                <td colspan="3">GH₵18,060</td>
+                              </tr>
+                              <tr>
+                                <td><strong>Total Offering</strong></td>
+                                <td colspan="3"><strong>GH₵43,000</strong></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="service-section sunday card shadow">
+                    <div class="card-body">
+                      <div class="service-header text-center mb-4 pb-3 border-bottom">
+                        <h3 class="d-flex align-items-center justify-content-center gap-2">
+                          <span class="service-icon">📖</span> Monday Bible Studies
+                        </h3>
+                      </div>
+                      <div class="detailed-table">
+                        <div class="table-responsive">
+                          <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                              <tr>
+                                <th colspan="4" class="text-center">
+                                  <h4 class="mb-0">Attendance & Offering</h4>
+                                </th>
+                              </tr>
+                              <tr>
+                                <th></th>
+                                <th>Males</th>
+                                <th>Females</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Adults</td>
+                                <td>30</td>
+                                <td>25</td>
+                                <td>55</td>
+                              </tr>
+                              <tr>
+                                <td>Youths</td>
+                                <td>15</td>
+                                <td>20</td>
+                                <td>35</td>
+                              </tr>
+                              <tr>
+                                <td>Children</td>
+                                <td>12</td>
+                                <td>10</td>
+                                <td>22</td>
+                              </tr>
+                              <tr>
+                                <td>New Comers</td>
+                                <td>5</td>
+                                <td>7</td>
+                                <td>12</td>
+                              </tr>
+                              <tr>
+                                <td>Total Attendance</td>
+                                <td>62</td>
+                                <td>62</td>
+                                <td>124</td>
+                              </tr>
+                              <tr>
+                                <td colspan="4" class="text-center"><strong>Offering Details</strong></td>
+                              </tr>
+                              <tr>
+                                <td>1st Offering</td>
+                                <td colspan="3">GH₵24,940</td>
+                              </tr>
+                              <tr>
+                                <td>2nd Offering</td>
+                                <td colspan="3">GH₵18,060</td>
+                              </tr>
+                              <tr>
+                                <td><strong>Total Offering</strong></td>
+                                <td colspan="3"><strong>GH₵43,000</strong></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="service-section sunday card shadow">
+                    <div class="card-body">
+                      <div class="service-header text-center mb-4 pb-3 border-bottom">
+                        <h3 class="d-flex align-items-center justify-content-center gap-2">
+                          <span class="service-icon">🔥</span> Thursday Revival & Evangelism
+                        </h3>
+                      </div>
+                      <div class="detailed-table">
+                        <div class="table-responsive">
+                          <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                              <tr>
+                                <th colspan="4" class="text-center">
+                                  <h4 class="mb-0">Attendance & Offering</h4>
+                                </th>
+                              </tr>
+                              <tr>
+                                <th></th>
+                                <th>Males</th>
+                                <th>Females</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Adults</td>
+                                <td>30</td>
+                                <td>25</td>
+                                <td>55</td>
+                              </tr>
+                              <tr>
+                                <td>Youths</td>
+                                <td>15</td>
+                                <td>20</td>
+                                <td>35</td>
+                              </tr>
+                              <tr>
+                                <td>Children</td>
+                                <td>12</td>
+                                <td>10</td>
+                                <td>22</td>
+                              </tr>
+                              <tr>
+                                <td>New Comers</td>
+                                <td>5</td>
+                                <td>7</td>
+                                <td>12</td>
+                              </tr>
+                              <tr>
+                                <td>Total Attendance</td>
+                                <td>62</td>
+                                <td>62</td>
+                                <td>124</td>
+                              </tr>
+                              <tr>
+                                <td colspan="4" class="text-center"><strong>Offering Details</strong></td>
+                              </tr>
+                              <tr>
+                                <td>1st Offering</td>
+                                <td colspan="3">GH₵24,940</td>
+                              </tr>
+                              <tr>
+                                <td>2nd Offering</td>
+                                <td colspan="3">GH₵18,060</td>
+                              </tr>
+                              <tr>
+                                <td><strong>Total Offering</strong></td>
+                                <td colspan="3"><strong>GH₵43,000</strong></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div> -->

@@ -1,0 +1,71 @@
+<% layout('layouts/boilerplate') -%>
+
+    <%- include('../layouts/partials/navbar') %>
+
+      <%- include('../layouts/partials/flash') %>
+
+
+        <main class="app-main">
+            <div class="app-content-header">
+                <div class="container-fluid">
+                    <div class="row text-center">
+                        <div class="col-md-12">
+                            <h2 class="mb-0">Registration Forms</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-content m-5 mt-2">
+                <div class="container-fluid">
+                    <div class="row g-4 d-flex justify-content-center">
+                        <div class="col-md-6 ">
+                            <div class="card card-info card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <h4>Add Church</h4>
+                                    </div>
+                                </div>
+                                <form action="/church/create" method="POST">
+                                    <div class="card-body">
+                                        <div class=" g-3">
+
+                                            <%if(req.session.status ==='manager' ){%>
+                                                <div class="col">
+                                                    <label for="category" class="form-label">Select Group</label>
+                                                    <select class="form-select" id="category" name="church[groupId]"
+                                                        required>
+                                                        <option value="">Select Group</option>
+                                                        <%for(group of groups){%>
+                                                            <option value="<%=group._id%>">
+                                                                <%=group.name%>
+                                                            </option>
+                                                            <%}%>
+                                                    </select>
+                                                </div>
+                                                <%}%>
+
+
+                                                    <div class="col">
+                                                        <label for="name" class="form-label">Church name</label>
+                                                        <input type="text" class="form-control" id="name"
+                                                            name="church[name]" required/>
+                                                    </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer d-flex justify-content-end gap-2">
+                                        <button class="btn btn-info" type="submit">Submit form</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </main>
+        <%- include('../layouts/partials/footer') %>

@@ -1,0 +1,371 @@
+<% layout('layouts/boilerplate') -%>
+
+  <%- include('../layouts/partials/navbar') %>
+    <%- include('../layouts/partials/flash') %>
+
+      <style>
+        /* Existing styles unchanged */
+        .registration-card {
+          border-radius: 15px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+          max-width: 900px;
+        }
+
+        .card-header-gradient {
+          background: linear-gradient(135deg, #4361ee, #3f37c9);
+          color: white;
+        }
+
+        .member-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #4361ee, #3f37c9);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-weight: bold;
+          margin-right: 15px;
+          flex-shrink: 0;
+        }
+
+        .btn-register {
+          background: linear-gradient(135deg, #4361ee, #3f37c9);
+          border: none;
+          transition: transform 0.3s, box-shadow 0.3s;
+          color: white;
+        }
+
+        .btn-register:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 7px 15px rgba(67, 97, 238, 0.3);
+          color: white;
+        }
+
+        .results-container {
+          max-height: 300px;
+          overflow-y: auto;
+          border-radius: 10px;
+          border: 1px solid #dee2e6;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+          display: none;
+          z-index: 1000;
+          position: absolute;
+          width: 100%;
+        }
+
+        .selected-member {
+          background-color: #edf2ff;
+          border-radius: 10px;
+          border: 1px solid #d0d9ff;
+        }
+
+        .highlight {
+          background-color: #fff9c4;
+          font-weight: bold;
+        }
+
+        .password-toggle {
+          position: absolute;
+          right: 15px;
+          top: 50%;
+          transform: translateY(-50%);
+          cursor: pointer;
+          color: #6c757d;
+          z-index: 10;
+        }
+
+        .section-title {
+          font-size: 1.2rem;
+          font-weight: 600;
+          color: #4361ee;
+          padding-bottom: 10px;
+          border-bottom: 2px solid #e9ecef;
+        }
+
+        .position-relative {
+          position: relative;
+        }
+
+        .member-item {
+          padding: 10px 15px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          border-bottom: 1px solid #eee;
+        }
+
+        .member-item:hover {
+          background-color: #f8f9ff;
+        }
+      </style>
+
+      <main class="app-main">
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row text-center">
+              <div class="col-md-12">
+                <h1 class="fw-bold mb-3"><i class="fas fa-user-plus me-2"></i>User Registration</h1>
+                <p class="mb-0">Create new user accounts and link them to existing members</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-content m-5 mt-2">
+          <div class="container-fluid">
+            <div class="row g-4">
+              <div class="col-md-12">
+                <div class="card card-info card-outline mb-4">
+
+                  <form id="registrationForm" action="/user/create" method="POST">
+                    <div class="card-body">
+                      <div class="row g-3">
+
+                        <div class="col-md-6 mb-3">
+                          <label for="username" class="form-label fw-semibold">Username</label>
+                          <input required type="text" class="form-control" id="username" name="user[username]" oninput="this.value = this.value.replace(/[^a-zA-Z0-9_]/g, '')"
+                            placeholder="Enter username">
+                          <div class="form-text">Must be 4-20 characters, letters and numbers only</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                          <label for="category" class="form-label fw-semibold">User Status</label>
+                          <select required class="form-select" id="category" name="user[status]" required>
+                            <option value="">Select User Status</option>
+                            <option value="pastor">Church Pastor</option>
+                            <option value="admin">Church Admin</option>
+                            <%if(req.session.status=='manager' || req.session.status=='grouppastor' ||
+                              req.session.status=='groupadmin' ){%>
+                              <option value="grouppastor">Group Pastor</option>
+                              <option value="groupadmin">Group Admin</option>
+                              <%}%>
+                          </select>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="col-md-6 mb-3 position-relative">
+                          <label for="password" class="form-label fw-semibold">Password</label>
+                          <input required type="password" class="form-control" id="password" name="user[password]"
+                            placeholder="Create password">
+                          <span class="password-toggle" id="passwordToggle">
+                            <i class="fas fa-eye"></i>
+                          </span>
+                          <div class="form-text">Minimum 8 characters with letters and numbers</div>
+                        </div>
+
+                        <!-- Confirm Password Field -->
+                        <div class="col-md-6 mb-3 position-relative">
+                          <label for="confirmPassword" class="form-label fw-semibold">Confirm Password</label>
+                          <input required type="password" class="form-control" id="confirmPassword"
+                            placeholder="Re-enter password">
+                          <span class="password-toggle" id="confirmPasswordToggle">
+                            <i class="fas fa-eye"></i>
+                          </span>
+                        </div>
+
+                        <!-- Member Link Section -->
+                        <div class="mb-4">
+                          <div class="section-title mb-3">
+                            <i class="fas fa-link me-2"></i>Link to a Member
+                          </div>
+
+                          <p class="mb-3">Search for an existing member to link to this user account.</p>
+
+                          <div class="position-relative mb-3">
+                            <i
+                              class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                            <input type="text" class="form-control ps-5" id="memberSearch"
+                              placeholder="Search members by name.">
+                            <div class="results-container bg-white mt-2" id="resultsContainer">
+                              <div class="member-list p-2" id="membersList"></div>
+                            </div>
+                          </div>
+
+                          <div class="selected-member p-3 d-none" id="selectedMember">
+                            <div class="d-flex align-items-center">
+                              <div class="member-avatar" id="selectedAvatar"></div>
+                              <div>
+                                <div class="fw-bold" id="selectedName"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <input type="hidden" id="selectedMemberId" name="user[memberId]">
+
+                      </div>
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-end gap-2">
+                      <button class="btn btn-info" type="submit"><i class="fas fa-user-check me-2"></i>Create User
+                        Account</button>
+                    </div>
+                  </form>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+          const members = <%- JSON.stringify(members || []) %>;
+
+          document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('memberSearch');
+            const membersList = document.getElementById('membersList');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const selectedMember = document.getElementById('selectedMember');
+            const selectedName = document.getElementById('selectedName');
+            const selectedAvatar = document.getElementById('selectedAvatar');
+            const selectedMemberId = document.getElementById('selectedMemberId');
+            const passwordInput = document.getElementById('password');
+            const passwordToggle = document.getElementById('passwordToggle');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const confirmPasswordToggle = document.getElementById('confirmPasswordToggle');
+            const registrationForm = document.getElementById('registrationForm');
+
+            function getFullName(member) {
+              return `${member.firstname} ${member.lastname}`;
+            }
+
+            function getInitials(member) {
+              return (member.firstname[0] + member.lastname[0]).toUpperCase();
+            }
+
+            function renderMembers(membersToRender) {
+              membersList.innerHTML = '';
+
+              if (membersToRender.length === 0) {
+                membersList.innerHTML = `
+            <div class="text-center py-4 text-muted">
+              <i class="fas fa-user-times fa-2x mb-2"></i>
+              <p class="mb-0">No members found. Try a different search term.</p>
+            </div>`;
+                return;
+              }
+
+              membersToRender.forEach(member => {
+                const div = document.createElement('div');
+                div.className = 'member-item';
+
+                const fullName = getFullName(member);
+                const initials = getInitials(member);
+
+                div.innerHTML = `
+            <div class="d-flex align-items-center">
+              <div class="member-avatar">${initials}</div>
+              <div class="flex-grow-1">
+                <div class="fw-semibold">${highlightMatches(fullName)}</div>
+              </div>
+            </div>`;
+
+                div.addEventListener('click', () => selectMember(member));
+                membersList.appendChild(div);
+              });
+            }
+
+            function highlightMatches(text) {
+              if (!searchInput.value.trim()) return text;
+              const searchTerm = searchInput.value.trim().toLowerCase();
+              const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, 'gi');
+              return text.replace(regex, '<span class="highlight">$1</span>');
+            }
+
+            function escapeRegExp(string) {
+              return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+
+            function filterMembers() {
+              const searchTerm = searchInput.value.trim().toLowerCase();
+              if (!searchTerm) {
+                resultsContainer.style.display = 'none';
+                return;
+              }
+
+              const filteredMembers = members.filter(member => {
+                const fullName = getFullName(member).toLowerCase();
+                return fullName.includes(searchTerm);
+              });
+
+              renderMembers(filteredMembers);
+              resultsContainer.style.display = 'block';
+            }
+
+            function selectMember(member) {
+              const fullName = getFullName(member);
+              const initials = getInitials(member);
+
+              selectedName.textContent = fullName;
+              selectedAvatar.textContent = initials;
+              selectedMemberId.value = member._id;
+
+              selectedMember.classList.remove('d-none');
+              searchInput.value = '';
+              resultsContainer.style.display = 'none';
+            }
+
+            // Toggle password visibility
+            if (passwordToggle) {
+              passwordToggle.addEventListener('click', () => {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                passwordToggle.innerHTML = type === 'password'
+                  ? '<i class="fas fa-eye"></i>'
+                  : '<i class="fas fa-eye-slash"></i>';
+              });
+            }
+
+            if (confirmPasswordToggle) {
+              confirmPasswordToggle.addEventListener('click', () => {
+                const type = confirmPasswordInput.type === 'password' ? 'text' : 'password';
+                confirmPasswordInput.type = type;
+                confirmPasswordToggle.innerHTML = type === 'password'
+                  ? '<i class="fas fa-eye"></i>'
+                  : '<i class="fas fa-eye-slash"></i>';
+              });
+            }
+
+            registrationForm.addEventListener('submit', function (e) {
+              e.preventDefault();
+
+              const username = document.getElementById('username').value;
+              const password = passwordInput.value;
+              const confirmPassword = confirmPasswordInput.value;
+              const status = document.getElementById('category').value;
+
+              if (!username || !password || !status || !selectedMemberId.value) {
+                alert('Please fill in all required fields and select a member');
+                return;
+              }
+
+              if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+              }
+
+              registrationForm.submit();
+            });
+
+            if (searchInput) {
+              searchInput.addEventListener('input', filterMembers);
+            }
+
+            document.addEventListener('click', (e) => {
+              if (!e.target.closest('.position-relative') &&
+                !e.target.closest('.results-container')) {
+                resultsContainer.style.display = 'none';
+              }
+            });
+
+            if (selectedMember) {
+              selectedMember.classList.add('d-none');
+            }
+          });
+        </script>
+      </main>
+
+      <%- include('../layouts/partials/footer') %>

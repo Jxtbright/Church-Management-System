@@ -1,0 +1,568 @@
+<% layout('layouts/boilerplate') -%>
+  <%- include('../layouts/partials/navbar') %>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      /* Only custom styles that can't be achieved with Bootstrap */
+      .stat-card,
+      .service-section {
+        transition: transform 0.3s ease;
+        border: 1px solid #e2e8f0;
+      }
+
+      .stat-card:hover,
+      .service-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-value {
+        color: #3498db;
+      }
+
+      .accordion-header::after {
+        content: '\25BC';
+        transition: transform 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .accordion-header.active::after {
+        transform: rotate(180deg);
+      }
+
+      .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+      }
+
+      .accordion-content.active {
+        max-height: 5000px;
+      }
+
+      /* Custom table header styling */
+      .detailed-table thead tr:first-child th {
+        background-color: #1a2530;
+        font-size: 1.1rem;
+        padding: 1rem;
+      }
+
+      .detailed-table th {
+        background-color: #2c3e50;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      .detailed-table tbody tr:nth-child(even) {
+        background-color: #f8f9fa;
+      }
+
+      .detailed-table tbody tr:hover {
+        background-color: #edf2f7;
+      }
+
+      @media (max-width: 768px) {
+        .stat-value {
+          font-size: 2rem;
+        }
+
+        /* Responsive table adjustments */
+        .detailed-table th,
+        .detailed-table td {
+          padding: 0.5rem;
+          font-size: 0.85rem;
+        }
+
+        .detailed-table thead tr:first-child th {
+          font-size: 0.95rem;
+          padding: 0.75rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .stat-value {
+          font-size: 1.8rem;
+        }
+
+        /* Even smaller table adjustments */
+        .detailed-table th,
+        .detailed-table td {
+          padding: 0.4rem;
+          font-size: 0.8rem;
+        }
+
+        .detailed-table thead tr:first-child th {
+          font-size: 0.9rem;
+          padding: 0.5rem;
+        }
+
+        .service-header h3 {
+          font-size: 1.1rem;
+        }
+      }
+    </style>
+
+    <main class="app-main">
+      <div class="app-content">
+        <div class="container-fluid">
+          <div class="container">
+            <header class="bg-primary text-white text-center p-3 p-md-4 rounded shadow mb-4">
+              <h1 class="display-4 fw-bold d-flex align-items-center justify-content-center gap-3 flex-wrap">
+                <i class="fas fa-church"></i>
+                <% if (req.session.churchAttendance){ %>
+                  <%=req.session.churchName%> Church
+                <%}else if(req.session.groupAttendance){%>
+                  <%=req.session.groupName%> Group
+                  <%}%>
+              </h1>
+              <p class="lead mb-0">Monthly Attendance & Offering Report - <%=req.session.date%></p>
+            </header>
+
+            <div class="row g-4 mb-4">
+            </div>
+
+            <div class="attendance-timeline card shadow mb-4">
+              <div class="card-body">
+                <div
+                  class="timeline-header d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom flex-wrap">
+                  <h2 class="mx-auto d-flex align-items-center gap-2 mb-2 mb-md-0">
+                    <i class="fas fa-calendar-alt"></i> Attendance Report
+                  </h2>
+                  <a href="/attendance/download_monthly" class="btn btn-primary ms-md-auto">PDF</a>
+                </div>
+
+
+                <div class="timeline-accordion">
+                  <% attendanceArray.forEach((attendance, weekIndex)=> {
+                    const weekId = `week-${weekIndex + 1}`;
+                    let offeringIndex = 0;
+                    %>
+                    <div class="accordion-item card mb-3 shadow">
+                      <button
+                        class="accordion-header card-header bg-primary text-white w-100 text-start d-flex justify-content-between align-items-center"
+                        data-toggle="<%= weekId %>">
+                        Week <%= weekIndex + 1 %>
+                      </button>
+
+                      <div class="accordion-content" id="<%= weekId %>">
+                        <div class="service-tables row g-4 mt-3">
+                          <% for (const days of attendance) { %>
+                            <div class="service-section sunday card shadow">
+                              <div class="card-body">
+                                <div class="service-header text-center mb-4 pb-3 border-bottom">
+                                  <h3 class="d-flex align-items-center justify-content-center gap-2">
+                                    <% if(days.dayName==='Sunday' ) { %>
+                                      <span class="service-icon">⛪</span>Sunday Worship Service
+                                      <% } else if(days.dayName==='Monday' ) { %>
+                                        <span class="service-icon">📖</span>Monday Bible Studies
+                                        <% } else if(days.dayName==='Thursday' ) { %>
+                                          <span class="service-icon">🔥</span>Thursday Revival and Evangelism Training
+                                          <% } %>
+                                  </h3>
+                                </div>
+
+                                <div class="detailed-table">
+                                  <div class="table-responsive">
+                                    <table class="table table-bordered table-hover">
+                                      <thead class="table-dark">
+                                        <tr>
+                                          <th colspan="4" class="text-center">
+                                            <h4 class="mb-0">Attendance & Offering</h4>
+                                          </th>
+                                        </tr>
+                                        <% if (!days.reason) { %>
+                                          <tr>
+                                            <th></th>
+                                            <th>Males</th>
+                                            <th>Females</th>
+                                            <th>Total</th>
+                                          </tr>
+                                          <% } else { %>
+                                            <tr class="text-center">
+                                              <th rowspan="4">No Service</th>
+                                            </tr>
+                                            <% } %>
+                                      </thead>
+                                      <tbody>
+                                        <% if (!days.reason) {
+                                          %>
+                                          <tr>
+                                            <td>Adults</td>
+                                            <td>
+                                              <%= days.adultmale || 0 %>
+                                            </td>
+                                            <td>
+                                              <%= days.adultfemale || 0 %>
+                                            </td>
+                                            <td>
+                                              <%= days.adultmale || 0 + days.adultfemale || 0 %>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>Youths</td>
+                                            <td>
+                                              <%= days.youthmale || 0 %>
+                                            </td>
+                                            <td>
+                                              <%= days.youthfemale || 0 %>
+                                            </td>
+                                            <td>
+                                              <%= days.youthmale || 0 + days.youthfemale || 0 %>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>Children</td>
+                                            <td>
+                                              <%= days.childrenmale || 0 %>
+                                            </td>
+                                            <td>
+                                              <%= days.childrenfemale || 0 %>
+                                            </td>
+                                            <td>
+                                              <%= days.childrenmale || 0 + days.childrenfemale || 0 %>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>New Comers</td>
+                                            <td>
+                                              <%= days.newcomersmales || 0 %>
+                                            </td>
+                                            <td>
+                                              <%= days.newcomersfemales || 0 %>
+                                            </td>
+                                            <td>
+                                              <%= days.newcomersmales || 0 + days.newcomersfemales || 0 %>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>Total Attendance</td>
+                                            <td>
+                                              <%= days.adultmale || 0 + days.youthmale || 0 + days.childrenmale || 0 %>
+                                            </td>
+                                            <td>
+                                              <%= days.adultfemale || 0 + days.youthfemale || 0 + days.childrenfemale || 0 %>
+                                            </td>
+                                            <td>
+                                              <%= days.adultmale || 0 + days.youthmale || 0 + days.childrenmale || 0 + days.adultfemale || 0
+                                                + days.youthfemale || 0 + days.childrenfemale || 0 %>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td colspan="4" class="text-center"><strong>Offering Details</strong></td>
+                                          </tr>
+                                          <%if(weekIndex===0){
+                                            %>
+                                            <tr>
+                                              <td>1st Offering</td>
+                                              <td colspan="3">GH₵<%=week1OfferingArray[offeringIndex].firstoffering%>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td>2nd Offering</td>
+                                              <td colspan="3">GH₵<%=week1OfferingArray[offeringIndex].secondoffering%>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td><strong>Total Offering</strong></td>
+                                              <td colspan="3"><strong>GH₵
+                                                  <%=week1OfferingArray[offeringIndex].firstoffering +
+                                                    week1OfferingArray[offeringIndex].secondoffering%>
+                                                </strong></td>
+                                            </tr>
+                                            <%}else if(weekIndex===1){ 
+                                              %>
+                                              <tr>
+                                                <td>1st Offering</td>
+                                                <td colspan="3">GH₵
+                                                  <%=week2OfferingArray[offeringIndex].firstoffering%>
+                                                </td>
+                                              </tr>
+                                              <tr>
+                                                <td>2nd Offering</td>
+                                                <td colspan="3">GH₵
+                                                  <%=week2OfferingArray[offeringIndex].secondoffering%>
+                                                </td>
+                                              </tr>
+                                              <tr>
+                                                <td><strong>Total Offering</strong></td>
+                                                <td colspan="3"><strong>GH₵
+                                                    <%=week2OfferingArray[offeringIndex].firstoffering +
+                                                      week2OfferingArray[offeringIndex].secondoffering%>
+                                                  </strong></td>
+                                              </tr>
+                                              <%}else if(weekIndex===2){
+                                                %>
+                                                <tr>
+                                                  <td>1st Offering</td>
+                                                  <td colspan="3">GH₵
+                                                    <%=week3OfferingArray[offeringIndex].firstoffering%>
+                                                  </td>
+                                                </tr>
+                                                <tr>
+                                                  <td>2nd Offering</td>
+                                                  <td colspan="3">GH₵
+                                                    <%=week3OfferingArray[offeringIndex].secondoffering%>
+                                                  </td>
+                                                </tr>
+                                                <tr>
+                                                  <td><strong>Total Offering</strong></td>
+                                                  <td colspan="3"><strong>GH₵
+                                                      <%=week3OfferingArray[offeringIndex].firstoffering +
+                                                        week3OfferingArray[offeringIndex].secondoffering%>
+                                                    </strong>
+                                                  </td>
+                                                </tr>
+                                                <%}else if(weekIndex===3){ 
+                                                  %>
+                                                  <tr>
+                                                    <td>1st Offering</td>
+                                                    <td colspan="3">GH₵
+                                                      <%=week4OfferingArray[offeringIndex].firstoffering%>
+                                                    </td>
+                                                  </tr>
+                                                  <tr>
+                                                    <td>2nd Offering</td>
+                                                    <td colspan="3">GH₵
+                                                      <%=week4OfferingArray[offeringIndex].secondoffering%>
+                                                    </td>
+                                                  </tr>
+                                                  <tr>
+                                                    <td><strong>Total Offering</strong></td>
+                                                    <td colspan="3"><strong>GH₵
+                                                        <%=week4OfferingArray[offeringIndex].firstoffering +
+                                                          week4OfferingArray[offeringIndex].secondoffering%>
+                                                      </strong>
+                                                    </td>
+                                                  </tr>
+                                                  <%}else if(weekIndex===4){ 
+                                                    %>
+                                                    <tr>
+                                                      <td>1st Offering</td>
+                                                      <td colspan="3">GH₵
+                                                        <%=week5OfferingArray[offeringIndex].firstoffering%>
+                                                      </td>
+                                                    </tr>
+                                                    <tr>
+                                                      <td>2nd Offering</td>
+                                                      <td colspan="3">GH₵
+                                                        <%=week5OfferingArray[offeringIndex].secondoffering%>
+                                                      </td>
+                                                    </tr>
+                                                    <tr>
+                                                      <td><strong>Total Offering</strong></td>
+                                                      <td colspan="3"><strong>GH₵
+                                                          <%=week5OfferingArray[offeringIndex].firstoffering +
+                                                            week5OfferingArray[offeringIndex].secondoffering%>
+                                                        </strong></td>
+                                                    </tr>
+                                                    <%}%>
+                                                      <% } else { %>
+                                                        <tr class="text-center">
+                                                          <td rowspan="4"><strong>
+                                                              <%= days.reason %>
+                                                            </strong></td>
+                                                        </tr>
+                                                        <% } %>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <%offeringIndex++%>
+                              <% } %>
+                        </div>
+                      </div>
+                    </div>
+                    <% }) %>
+                </div>
+
+                <div class="service-section sunday card shadow">
+                    
+                    <div class="card-body">
+                      <div class="service-header text-center mb-4 pb-3 border-bottom">
+                        <h3 class="d-flex align-items-center justify-content-center gap-2">
+                          <span class="service-icon">⛪</span> GCK
+                        </h3>
+                      </div>
+                      <div class="detailed-table">
+                        <div class="table-responsive">
+                          <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                              <tr>
+                                <th>Date</th>
+                                <th>Adults</th>
+                                <th>Youths</th>
+                                <th>Children</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% 
+                              let totalAdults =0
+                              let totalYouths =0
+                              let totalChildren =0
+                              for(service of gckArray){ 
+                              %>
+                                <tr>
+                                <td><%= service.date.toISOString().split('T')[0] %></td>
+                                <td><%=service.adults%></td>
+                                <td><%=service.youths%></td>
+                                <td><%=service.children%></td>
+                                <td><%=service.adults + service.youths + service.children%></td>
+                              </tr>
+                              <% 
+                              totalAdults += service.adults
+                              totalYouths += service.youths
+                              totalChildren += service.children
+                            }%>
+                              <tr>
+                                <td>Total</td>
+                                <td><%=totalAdults%></td>
+                                <td><%=totalYouths%></td>
+                                <td><%=totalChildren%></td>
+                                <td><%=totalAdults + totalYouths + totalChildren%></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="service-section sunday card shadow">
+                    
+                    <div class="card-body">
+                      <div class="service-header text-center mb-4 pb-3 border-bottom">
+                        <h3 class="d-flex align-items-center justify-content-center gap-2">
+                          <span class="service-icon">⛪</span> Home Caring Fellowship
+                        </h3>
+                      </div>
+                      <div class="detailed-table">
+                        <div class="table-responsive">
+                          <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                              <tr>
+                                <th>Date</th>
+                                <th>Adults</th>
+                                <th>Youths</th>
+                                <th>Children</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% let totalAdults1 =0
+                              let totalYouths1 =0
+                              let totalChildren1 =0
+                              for(service of homeCaringFellowshipArray){ %>
+                                <tr>
+                                <td><%= service.date.toISOString().split('T')[0] %></td>
+                                <td><%=service.adults%></td>
+                                <td><%=service.youths%></td>
+                                <td><%=service.children%></td>
+                                <td><%=service.adults + service.youths + service.children%></td>
+                              </tr>
+                              <% totalAdults1 += service.adults
+                              totalYouths1 += service.youths
+                              totalChildren1 += service.children
+                            }%>
+                              <tr>
+                                <td>Total</td>
+                                <td><%=totalAdults1%></td>
+                                <td><%=totalYouths1%></td>
+                                <td><%=totalChildren1%></td>
+                                <td><%=totalAdults1 + totalYouths1 + totalChildren1%></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="service-section sunday card shadow">
+                    
+                    <div class="card-body">
+                      <div class="service-header text-center mb-4 pb-3 border-bottom">
+                        <h3 class="d-flex align-items-center justify-content-center gap-2">
+                          <span class="service-icon">⛪</span> Seminars
+                        </h3>
+                      </div>
+                      <div class="detailed-table">
+                        <div class="table-responsive">
+                          <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                              <tr>
+                                <th>Date</th>
+                                <th>Adults</th>
+                                <th>Youths</th>
+                                <th>Children</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% let totalAdults2 =0
+                              let totalYouths2 =0
+                              let totalChildren2 =0
+                              for(service of seminarArray){ %>
+                                <tr>
+                                <td><%= service.date.toISOString().split('T')[0] %></td>
+                                <td><%=service.adults%></td>
+                                <td><%=service.youths%></td>
+                                <td><%=service.children%></td>
+                                <td><%=service.adults + service.youths + service.children%></td>
+                              </tr>
+                              <% totalAdults2 += service.adults
+                              totalYouths2 += service.youths
+                              totalChildren2 += service.children
+                            }%>
+                              <tr>
+                                <td>Total</td>
+                                <td><%=totalAdults2%></td>
+                                <td><%=totalYouths2%></td>
+                                <td><%=totalChildren2%></td>
+                                <td><%=totalAdults2 + totalYouths2 + totalChildren2%></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+              </div>
+            </div>
+
+            <footer class="text-center py-4 text-muted">
+              <p class="mb-0">Grace Community Church &copy; 2023 | Attendance Report Generated on June 15, 2023</p>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+        accordionHeaders.forEach(header => {
+          header.addEventListener('click', function () {
+            const isActive = this.classList.contains('active');
+
+            // Close all accordion items
+            document.querySelectorAll('.accordion-header').forEach(h => {
+              h.classList.remove('active');
+              h.nextElementSibling.classList.remove('active');
+            });
+
+            // If this wasn't active, open it
+            if (!isActive) {
+              this.classList.add('active');
+              this.nextElementSibling.classList.add('active');
+            }
+          });
+        });
+      });
+    </script>

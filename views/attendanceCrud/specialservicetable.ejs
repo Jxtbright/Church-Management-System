@@ -1,0 +1,107 @@
+<% layout('layouts/boilerplate') -%>
+
+  <%- include('../layouts/partials/navbar') %>
+
+    <%- include('../layouts/partials/flash') %>
+
+      <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+
+      <main class="app-main">
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-12 text-center">
+                <h3 class="mb-3">Special Service List</h3>
+              </div>
+              <div class="col-12">
+                <div class="card card-info card-outline">
+                  <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="card-body table-responsive">
+                        <table id="example1" class="table table-bordered table-striped">
+                          <thead>
+                            <tr>
+                              <th>Service</th>
+                              <th>Date</th>
+                              <th class="d-none d-md-table-cell">Adults</th>
+                              <th class="d-none d-md-table-cell">Youths</th>
+                              <th class="d-none d-md-table-cell">Children</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% for(service of services ){ %>
+                              <tr class="align-middle">
+                                <td>
+                                  <%= service.category %>
+                                </td>
+                                <td class="d-none d-md-table-cell service-date">
+                                  <%= service.date.toISOString().split('T')[0] %>
+                                </td>
+                                <td class="d-none d-md-table-cell">
+                                  <%=service.adults%>
+                                </td>
+                                <td class="d-none d-md-table-cell">
+                                  <%=service.youths%>
+                                </td>
+                                <td class="d-none d-md-table-cell">
+                                  <%=service.children%>
+                                </td>
+                                <td class="d-flex gap-2 justify-content-center">
+                                  <a class="btn btn-primary" href="/attendance/<%=service._id%>/specialService">Edit</a>
+                                  <form id="deleteForm" action="/attendance/<%=service._id%>/deletespecialservice?_method=DELETE"
+                                    method="POST">
+                                    <button type="button" class="btn btn-danger"
+                                      onclick="confirmDelete('<%=service._id%>')">Delete
+                                    </button>
+                                    </form>
+                                </td>
+                              </tr>
+                              <% } %>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+      </main>
+      <%- include('../layouts/partials/footer') %>
+        <script src="/plugins/jquery/jquery.min.js"></script>
+        <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+        <script src="/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+        <script src="/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+        <script src="/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+        <script src="/dist/js/adminlte.min.js"></script>
+        <script src="/dist/js/demo.js"></script>
+        <script>
+          $(function () {
+            $("#example1").DataTable({
+              "responsive": true, 
+              "lengthChange": false, 
+              "autoWidth": false,
+              "buttons": ["excel", "pdf", "print"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+          });
+
+          function confirmDelete(id) {
+            Swal.fire({
+              title: "Are you sure?",
+              text: "This action cannot be undone!",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#d33",
+              cancelButtonColor: "#3085d6",
+              confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+              if (result.isConfirmed) {
+                const form = document.getElementById("deleteForm");
+                form.action = `/attendance/${id}/deletespecialservice?_method=DELETE`;
+                form.submit();
+              }
+            });
+          }
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

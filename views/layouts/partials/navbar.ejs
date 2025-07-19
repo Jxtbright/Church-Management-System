@@ -1,0 +1,397 @@
+<nav class="app-header navbar navbar-expand bg-body">
+  <div class="container-fluid">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+          <i class="bi bi-list"></i>
+        </a>
+      </li>
+      <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Home</a></li>
+      <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+<aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+  <div class="sidebar-brand">
+    <a href="" class="brand-link">
+      <img src="/images/logo.png" alt="church Logo" class="brand-image opacity-75 shadow" />
+      <span class="brand-text fw-light">DCLM</span>
+  </div>
+  <div class="sidebar-wrapper">
+    <nav class="mt-2">
+      <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
+        <%if(req.session.status==='manager'){%>
+          <li class="nav-item">
+            <a href="/managerPage" class="nav-link">
+              <i class="nav-icon bi bi-house-fill"></i>
+              <p>Home</p>
+            </a>
+          </li>
+          <li class="nav-item menu-open">
+            <a href="#" class="nav-link">
+              <i class="nav-icon bi bi-pencil-square"></i>
+              <p>
+                Registration
+                <i class="nav-arrow bi bi-chevron-right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/group/main" class="nav-link ">
+                  <i class="nav-icon bi bi-circle"></i>
+                  <p>Add a Group</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/church/create/page" class="nav-link ">
+                  <i class="nav-icon bi bi-circle"></i>
+                  <p>Add a church</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/user/churchUser" class="nav-link ">
+                  <i class="nav-icon bi bi-circle"></i>
+                  <p>Add a User</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/member/addMember" class="nav-link ">
+                  <i class="nav-icon bi bi-circle"></i>
+                  <p>Add a Member</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item menu-open">
+            <a href="#" class="nav-link">
+              <i class="nav-icon bi bi-view-list"></i>
+              <p>
+                Views
+                <i class="nav-arrow bi bi-chevron-right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/group/grouptable" class="nav-link ">
+                  <i class="nav-icon bi bi-circle"></i>
+                  <p>Groups</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/church/churchtable" class="nav-link ">
+                  <i class="nav-icon bi bi-circle"></i>
+                  <p>Churches</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/user/userstable" class="nav-link ">
+                  <i class="nav-icon bi bi-circle"></i>
+                  <p>Users</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/member/memberstable" class="nav-link ">
+                  <i class="nav-icon bi bi-circle"></i>
+                  <p>Members</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/attendance/calendar" class="nav-link ">
+                  <i class="nav-icon bi bi-table"></i>
+                  <p>Attendance</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item menu-open">
+            <a href="#" class="nav-link">
+              <i class="nav-icon bi bi-view-list"></i>
+              <p>
+                Special Service
+                <i class="nav-arrow bi bi-chevron-right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/attendance/specialService" class="nav-link ">
+                  <i class="nav-icon bi bi-table"></i>
+                  <p>Add Special Service</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/attendance/specialServiceTable" class="nav-link ">
+                  <i class="nav-icon bi bi-table"></i>
+                  <p>View Special Services</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item menu-open">
+            <a href="#" class="nav-link">
+              <i class="nav-icon bi bi-envelope-paper"></i>
+              <p>
+                Generate Report
+                <i class="nav-arrow bi bi-chevron-right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/attendance/monthlyreport" class="nav-link ">
+                  <i class="nav-icon bi bi-circle"></i>
+                  <p>Monthly Report</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/attendance/report" class="nav-link ">
+                  <i class="nav-icon bi bi-circle"></i>
+                  <p>General Report</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="/member/sendMessagePage" class="nav-link ">
+              <i class="nav-icon bi bi-envelope-arrow-up"></i>
+              <p>Send a Message</p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a href="/logout" class="nav-link ">
+              <i class="nav-icon bi bi-circle"></i>
+              <p>Logout</p>
+            </a>
+          </li>
+          <%}else if (req.session.status==='grouppastor' || req.session.status==='groupadmin' ){%>
+            <li class="nav-item">
+              <a href="/group/groupPage" class="nav-link">
+                <i class="nav-icon bi bi-house-fill"></i>
+                <p>Home</p>
+              </a>
+            </li>
+            <li class="nav-item menu-open">
+              <a href="#" class="nav-link">
+                <i class="nav-icon bi bi-pencil-square"></i>
+                <p>
+                  Registration
+                  <i class="nav-arrow bi bi-chevron-right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="/church/create/page" class="nav-link ">
+                    <i class="nav-icon bi bi-circle"></i>
+                    <p>Add a church</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/user/churchUser" class="nav-link ">
+                    <i class="nav-icon bi bi-circle"></i>
+                    <p>Add a user</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/member/addMember" class="nav-link ">
+                    <i class="nav-icon bi bi-circle"></i>
+                    <p>Add a member</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item menu-open">
+              <a href="#" class="nav-link">
+                <i class="nav-icon bi bi-view-list"></i>
+                <p>
+                  Views
+                  <i class="nav-arrow bi bi-chevron-right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="/church/churchtable" class="nav-link ">
+                    <i class="nav-icon bi bi-circle"></i>
+                    <p>Churches</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/user/userstable" class="nav-link ">
+                    <i class="nav-icon bi bi-circle"></i>
+                    <p>Users</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/member/memberstable" class="nav-link ">
+                    <i class="nav-icon bi bi-circle"></i>
+                    <p>Members</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/attendance/calendar" class="nav-link ">
+                    <i class="nav-icon bi bi-table"></i>
+                    <p>Attendance</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/attendance/specialService" class="nav-link ">
+                    <i class="nav-icon bi bi-table"></i>
+                    <p>Special Service</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/attendance/specialServiceTable" class="nav-link ">
+                    <i class="nav-icon bi bi-table"></i>
+                    <p>Special Service Table</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item menu-open">
+              <a href="#" class="nav-link">
+                <i class="nav-icon bi bi-envelope-paper"></i>
+                <p>
+                  Generate Report
+                  <i class="nav-arrow bi bi-chevron-right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="/attendance/monthlyreport" class="nav-link ">
+                    <i class="nav-icon bi bi-circle"></i>
+                    <p>Monthly Report</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/attendance/report" class="nav-link ">
+                    <i class="nav-icon bi bi-circle"></i>
+                    <p>General Report</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="/member/sendMessagePage" class="nav-link ">
+                <i class="nav-icon bi bi-envelope-arrow-up"></i>
+                <p>Send a Message</p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="/logout" class="nav-link ">
+                <i class="nav-icon bi bi-circle"></i>
+                <p>Logout</p>
+              </a>
+            </li>
+            <%}else{%>
+              <li class="nav-item">
+                <a href="/church/read/<%=req.session.churchId%>" class="nav-link">
+                  <i class="nav-icon bi bi-house-fill"></i>
+                  <p>Home</p>
+                </a>
+              </li>
+              <li class="nav-item menu-open">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-pencil-square"></i>
+                  <p>
+                    Registration
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <%if(req.session.status !=='admin' ){%>
+                    <li class="nav-item">
+                      <a href="/user/churchUser" class="nav-link ">
+                        <i class="nav-icon bi bi-circle"></i>
+                        <p>Add a User</p>
+                      </a>
+                    </li>
+                    <%}%>
+                      <li class="nav-item">
+                        <a href="/member/addMember" class="nav-link ">
+                          <i class="nav-icon bi bi-circle"></i>
+                          <p>Add a Member</p>
+                        </a>
+                      </li>
+                </ul>
+              </li>
+              <li class="nav-item menu-open">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-view-list"></i>
+                  <p>
+                    Views
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="/user/userstable" class="nav-link ">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Users</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/member/memberstable" class="nav-link ">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Members</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/attendance/calendar" class="nav-link ">
+                      <i class="nav-icon bi bi-table"></i>
+                      <p>Attendance</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/attendance/specialService" class="nav-link ">
+                      <i class="nav-icon bi bi-table"></i>
+                      <p>Special Service</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/attendance/specialServiceTable" class="nav-link ">
+                      <i class="nav-icon bi bi-table"></i>
+                      <p>Special Service Table</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item menu-open">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-envelope-paper"></i>
+                  <p>
+                    Generate Report
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="/attendance/monthlyreport" class="nav-link ">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Monthly Report</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/attendance/report" class="nav-link ">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>General Report</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a href="/member/sendMessagePage" class="nav-link ">
+                  <i class="nav-icon bi bi-envelope-arrow-up"></i>
+                  <p>Send a Message</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/logout" class="nav-link ">
+                  <i class="nav-icon bi bi-circle"></i>
+                  <p>Logout</p>
+                </a>
+              </li>
+              <%}%>
+      </ul>
+    </nav>
+  </div>
+</aside>

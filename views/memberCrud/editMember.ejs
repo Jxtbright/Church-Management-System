@@ -1,0 +1,555 @@
+<% layout('layouts/boilerplate') -%>
+
+  <%- include('../layouts/partials/navbar') %>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <style>
+      /* Add upload box styles */
+      .upload-container {
+        width: 300px;
+        height: 300px;
+        margin: 20px auto;
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: border-color 0.3s;
+      }
+
+      .upload-container:hover {
+        border-color: #007bff;
+      }
+
+      .upload-icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 10px;
+        color: #666;
+      }
+
+      .upload-text {
+        color: #666;
+        font-size: 14px;
+      }
+
+      /* Existing styles remain */
+      .container {
+        max-width: 800px;
+        margin: 20px auto;
+        text-align: center;
+      }
+
+      .image-container {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 20px;
+      }
+
+      #originalContainer {
+        width: 300px;
+        height: 300px;
+        overflow: hidden;
+        border: 3px solid #ddd;
+        background: #f5f5f5;
+      }
+
+      .circular-container {
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid #ddd;
+        background: #f5f5f5;
+      }
+
+      .existing {
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid #ddd;
+        background: #f5f5f5;
+      }
+
+      #imagePreview,
+      #existing,
+      #croppedPreview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .controls {
+        margin-top: 20px;
+      }
+
+      input[type="file"] {
+        margin: 20px 0;
+      }
+
+      button {
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 0 5px;
+      }
+
+      #cropButton:hover {
+        background: #0056b3;
+      }
+
+      .upload-container {
+        width: 250px;
+        /* Reduced from 300px */
+        height: 250px;
+        /* Reduced from 300px */
+        /* ... rest remains the same */
+      }
+
+      .image-container {
+        flex-direction: row;
+        gap: 20px;
+      }
+
+      #originalContainer,
+      .circular-container {
+        width: 250px;
+        /* Reduced from 300px */
+        height: 250px;
+        /* Reduced from 300px */
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .image-container {
+          flex-direction: column;
+          align-items: center;
+          gap: 20px;
+        }
+
+        .upload-container {
+          width: 200px;
+          height: 200px;
+        }
+
+        #originalContainer,
+        .circular-container {
+          width: 200px;
+          height: 200px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .upload-container {
+          width: 180px;
+          height: 180px;
+        }
+
+        #originalContainer,
+        .circular-container {
+          width: 180px;
+          height: 180px;
+        }
+      }
+    </style>
+
+    <main class="app-main">
+      <div class="app-content-header">
+        <div class="container-fluid">
+          <div class="row text-center">
+            <div class="col-md-12">
+              <h2 class="mb-0">Edit Member Details</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="app-content m-5 mt-2">
+        <div class="container-fluid">
+          <div class="row g-4">
+            <div class="col-md-12">
+              <div class="card card-info card-outline mb-4">
+                <div class="card-header">
+                  <div class="card-title">
+                    <h4>Edit Member Information</h4>
+                  </div>
+                </div>
+
+                <form action="/member/<%= member._id %>?_method=PUT" method="POST">
+                  <input type="hidden" name="_method" value="PUT">
+                  <div class="card-body">
+                    <div class="accordion d-grid gap-2 mx-auto" id="accordionExample">
+                      <div class="accordion-item">
+                        <div class="accordion-header">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"
+                            data-bs-parent="#accordionExample">
+                            <h5>Personal Details</h5>
+                          </button>
+                        </div>
+                        <div id="collapseOne" class="accordion-collapse collapse ">
+                          <div class="accordion-body ">
+                            <div class="row g-3">
+
+                              <div class="col-md-4 existing mx-auto">
+                                <img src="<%=member.image.url%>" alt="The existing image" id="existing">
+                              </div>
+
+                              <div class="container col-md-8">
+
+                                <div class="upload-container" id="uploadBox">
+                                  <svg class="upload-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-5M12 4v12m0 0-4-4m4 4 4-4" />
+                                  </svg>
+                                  <span class="upload-text">Click to update image</span>
+                                </div>
+
+                                <div class="image-container">
+                                  <div class="hidden" id="originalContainer">
+                                    <img id="imagePreview">
+                                  </div>
+
+                                  <div class="circular-container hidden" id="previewContainer">
+                                    <img id="croppedPreview">
+                                  </div>
+                                </div>
+
+                                <div class="controls hidden" id="controls">
+                                  <button id="cropButton">Crop Image</button>
+                                  <input type="file" id="imageInput" accept="image/*" class="hidden">
+                                  <input type="hidden" id="croppedImage" name="member[croppedImage]" />
+                                </div>
+                              </div>
+
+                              <div class="col-md-6">
+                                <label for="firstname" class="form-label">First name</label>
+                                <input type="text" class="form-control" id="firstname" name="member[firstname]"
+                                  value="<%= member.firstname %>" />
+                              </div>
+
+                              <div class="col-md-6">
+                                <label for="lastname" class="form-label">Last name</label>
+                                <input type="text" class="form-control" id="lastname" name="member[lastname]"
+                                  value="<%= member.lastname %>" />
+                              </div>
+
+                              <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="text" class="form-control" id="email" name="member[email]"
+                                  value="<%= member.email %>" />
+                              </div>
+
+                              <div class="col-md-6 mt-md-4">
+                                <label for="gender" class="form-label">Gender :</label>
+                                <div id="gender">
+                                  <div class="form-check form-check-inline">
+                                    <input required class="form-check-input" type="radio" name="member[gender]" id="male"
+                                      value="male" <%=member.gender==='male' ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="male">Male</label>
+                                  </div>
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="member[gender]" id="female"
+                                      value="female" <%=member.gender==='female' ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="female">Female</label>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="col-md-6 mt-md-4">
+                                <label for="relationship_status" class="form-label">Relationship Status:</label>
+                                <div id="relationship_status">
+                                  <div class="form-check form-check-inline">
+                                    <input required class="form-check-input" type="radio" name="member[relationshipstatus]"
+                                      id="married" value="married" <%=member.relationshipstatus==='married' ? 'checked'
+                                      : '' %>>
+                                    <label class="form-check-label" for="married">Married</label>
+                                  </div>
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="member[relationshipstatus]"
+                                      id="single" value="single" <%=member.relationshipstatus==='single' ? 'checked'
+                                      : '' %>>
+                                    <label class="form-check-label" for="single">Single</label>
+                                  </div>
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="member[relationshipstatus]"
+                                      id="widow_widower" value="widow" <%=member.relationshipstatus==='widow'
+                                      ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="widow_widower">Widow / Widower</label>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="col-md-6">
+                                <label for="category" class="form-label">Member Category</label>
+                                <select required class="form-select" id="category" name="member[category]">
+                                  <option value="adult" <%=member.category==='adult' ? 'selected' : '' %>>Adult</option>
+                                  <option value="youth" <%=member.category==='youth' ? 'selected' : '' %>>Youth</option>
+                                  <option value="children" <%=member.category==='children' ? 'selected' : '' %>>Children
+                                  </option>
+                                </select>
+                              </div>
+
+                              <div class="col-md-6 mt-md-4">
+                                <label for="memberstatus" class="form-label">Member Status: </label>
+                                <div id="memberstatus">
+                                  <div class="form-check form-check-inline">
+                                    <input required class="form-check-input" type="radio" name="member[memberstatus]" id="worker"
+                                      value="worker" <%=member.memberstatus==='worker' ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="worker">Worker</label>
+                                  </div>
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="member[memberstatus]"
+                                      id="non-worker" value="nonworker" <%=member.memberstatus==='nonworker' ? 'checked'
+                                      : '' %>>
+                                    <label class="form-check-label" for="non-worker">Non-Worker</label>
+                                  </div>
+                                </div>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="accordion-item">
+                        <div class="accordion-header">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapsetwo" aria-expanded="true" aria-controls="collapsetwo"
+                            data-bs-parent="#accordionExample">
+                            <h5>Academic or Work Details</h5>
+                          </button>
+                        </div>
+                        <div id="collapsetwo" class="accordion-collapse collapse ">
+                          <div class="accordion-body ">
+                            <div class="row g-3">
+                              <div class="row mt-2">
+
+                                <div class="col-md-6">
+                                  <label for="workOrSchool" class="form-label">Name of Institiution (Work or school)
+                                  </label>
+                                  <input type="text" class="form-control" id="workOrSchool" name="member[workOrSchool]"
+                                    value="<%= member.workOrSchool %>" />
+                                </div>
+
+                                <div class="col-md-6">
+                                  <label for="level" class="form-label">Level in school/Position at work</label>
+                                  <input type="text" class="form-control" id="level" name="member[levelOrPosition]"
+                                    value="<%= member.levelOrPosition %>" />
+                                </div>
+
+                                <div class="col-md-6">
+                                  <label for="program" class="form-label">Program at School/Deparment at Work</label>
+                                  <input type="text" class="form-control" id="program"
+                                    name="member[programOrDepartment]" value="<%= member.programOrDepartment %>" />
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="accordion-item">
+                        <div class="accordion-header">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapsethree" aria-expanded="true" aria-controls="collapsethree"
+                            data-bs-parent="#accordionExample">
+                            <h5>Emergency Contact Details</h5>
+                          </button>
+                        </div>
+                        <div id="collapsethree" class="accordion-collapse collapse ">
+                          <div class="accordion-body ">
+                            <div class="row g-3">
+                              <div class="row mt-2">
+
+                                <div class="col-md-6">
+                                  <label for="phonenumber" class="form-label">Personal active contact</label>
+                                  <input required type="text" class="form-control" id="phonenumber" name="member[phonenumber]"
+                                    value="0<%= member.phonenumber %>" />
+                                </div>
+
+                                <div class="col-md-6">
+                                  <label for="emergencyContact" class="form-label">Emergency Contact</label>
+                                  <input required type="text" class="form-control" id="emergencyContact"
+                                    name="member[emergencyContact]" value="<%= member.emergencyContact %>" />
+                                </div>
+
+                                <div class="col-md-6">
+                                  <label for="emergencyContactName" class="form-label">Emergency Contact Name</label>
+                                  <input required type="text" class="form-control" id="emergencyContactName"
+                                    name="member[emergencyContactName]" value="<%= member.emergencyContactName %>" />
+                                </div>
+                                <div class="col-md-6">
+                                  <label for="emergencyContactRelation" class="form-label">Emergency Contact
+                                    Relation</label>
+                                  <input required type="text" class="form-control" id="emergencyContactRelation"
+                                    name="member[emergencyContactRelation]"
+                                    value="<%= member.emergencyContactRelation %>" />
+                                </div>
+
+                                <div class="col-md-6">
+                                  <label for="houseAddress" class="form-label">House Address</label>
+                                  <input required type="text" class="form-control" id="houseAddress" name="member[houseAddress]"
+                                    value="<%= member.houseAddress %>" />
+                                </div>
+
+                                <div class="col-md-6">
+                                  <label for="gpsAddress" class="form-label">GPS Address</label>
+                                  <input required type="text" class="form-control" id="gpsAddress" name="member[gpsAddress]"
+                                    value="<%= member.gpsAddress %>" />
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                  <div class="m-3 d-flex justify-content-end gap-2">
+                    <button class="btn btn-info" type="submit">Update</button>
+                  </div>
+                </form>
+                <div class="card-footer d-flex justify-content-end gap-2">
+                  <form id="deleteForm" action="/member/<%= member._id %>/delete?_method=DELETE" method="POST">
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete member</button>
+                  </form>
+                  <a href="javascript:history.back()" class="btn btn-secondary">Back</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        function confirmDelete() {
+          Swal.fire({
+            title: "Are you sure?",
+            text: "This action cannot be undone!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              document.getElementById("deleteForm").submit();
+            }
+          });
+        }
+      </script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+      <script>
+        let cropper;
+
+        // Add upload box functionality
+        const uploadBox = document.getElementById('uploadBox');
+        const imageInput = document.getElementById('imageInput');
+
+        uploadBox.addEventListener('click', () => imageInput.click());
+
+        // Add drag and drop functionality
+        uploadBox.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          uploadBox.style.borderColor = '#007bff';
+        });
+
+        uploadBox.addEventListener('dragleave', () => {
+          uploadBox.style.borderColor = '#ddd';
+        });
+
+        uploadBox.addEventListener('drop', (e) => {
+          e.preventDefault();
+          uploadBox.style.borderColor = '#ddd';
+          const file = e.dataTransfer.files[0];
+          if (file) handleImage(file);
+        });
+
+        document.getElementById('imageInput').addEventListener('change', function (e) {
+          const file = e.target.files[0];
+          if (file) handleImage(file);
+        });
+
+        function handleImage(file) {
+          const reader = new FileReader();
+
+          reader.onload = function (event) {
+            // Hide upload box
+            uploadBox.classList.add('hidden');
+
+            // Show containers
+            document.getElementById('originalContainer').classList.remove('hidden');
+            document.getElementById('controls').classList.remove('hidden');
+            document.getElementById('imageInput').classList.remove('hidden');
+
+            const image = document.getElementById('imagePreview');
+            image.src = event.target.result;
+
+            // Cleanup previous cropper
+            if (cropper) {
+              cropper.destroy();
+            }
+
+            // Initialize new cropper
+            cropper = new Cropper(image, {
+              aspectRatio: 1,
+              viewMode: 0,
+              autoCropArea: 1,
+              guides: false,
+              highlight: false,
+              movable: true,
+              rotatable: false,
+              scalable: false,
+              zoomable: true,
+              toggleDragModeOnDblclick: false
+            });
+
+            // Hide preview initially
+            document.getElementById('previewContainer').classList.add('hidden');
+          };
+
+          reader.readAsDataURL(file);
+        }
+
+        document.getElementById('cropButton').addEventListener('click', function (e) {
+          e.preventDefault();
+
+          if (cropper) {
+            const croppedCanvas = cropper.getCroppedCanvas({
+              fillColor: '#fff',
+              imageSmoothingQuality: 'high'
+            });
+
+            // Convert to data URL
+            const croppedImageData = croppedCanvas.toDataURL('image/jpeg');
+
+            // Update preview image
+            const preview = document.getElementById('croppedPreview');
+            preview.src = croppedImageData;
+            document.getElementById('croppedImage').value = croppedImageData;
+
+            // Show preview container
+            document.getElementById('previewContainer').classList.remove('hidden');
+          }
+        });
+      </script>
+
+    </main>
+    <%- include('../layouts/partials/footer') %>
